@@ -1,0 +1,244 @@
+USE DFA23RAWDATA;
+/* Creating staging tables ---------------------------------------------------------------------------*/
+
+/* sensor data staging table*/
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SensorDataRaw (
+   SENSOR_ID VARCHAR(10)
+   TIMESTAMP TIMESTAMP,
+   TEMPERATURE_C FLOAT,
+   HUMIDITY FLOAT,
+   SOIL_MOISTURE FLOAT,
+   LIGHT_INTENSITY NUMBER(38,0),
+   BATTERY_LEVEL FLOAT
+);
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_SensorDataRaw
+SELECT
+  SENSOR_ID as SENSOR_ID
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  TRY_CAST(TEMPERATURE as FLOAT) as TEMPERATURE_C
+  TRY_CAST(HUMIDITY as FLOAT) as HUMIDITY,
+  TRY_CAST(SOIL_MOISTURE as FLOAT) as SOIL_MOISTURE,
+  TRY_CAST(LIGHT_INTENSITY as NUMBER(38,0)) as LIGHT_INTENSITY,
+  TRY_CAST(BATTERY_LEVEL as FLOAT) as BATTERY_LEVEL,
+FROM DFA23RAWDATA.RAWDATA.SENSORDATARAW;
+
+/* Crop data staging table*/
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_CropDataRaw (
+   Timestamp TIMESTAMP,
+   Crop_Type VARCHAR(20),
+   Crop_Yield  DECIMAL(8, 2),
+   Growth_Stage VARCHAR(30),
+   Pest_Issue VARCHAR(30)
+);
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_CropDataRaw
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  CROP_TYPE as Crop_Type,
+  TRY_CAST(CROP_YIELD as DECIMAL(8, 2)) as Crop_Yield,
+  GROWTH_STAGE as Growth_Stage,
+  PEST_ISSUE as Pest_Issue
+FROM DFA23RAWDATA.RAWDATA.CROPDATARAW;
+
+/*irrigation data staging table*/ 
+
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_IrrigationDataRaw (
+   Sensor_ID VARCHAR(16777216),
+   Timestamp TIMESTAMP,
+   Irrigation_Method VARCHAR(20),
+   Water_Source VARCHAR(20),
+   Irrigation_Duration_Min INT
+);
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_IrrigationDataRaw
+SELECT
+  SENSOR_ID as Sensor_ID,
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  IRRIGATION_METHOD AS Irrigation_Method,
+  WATER_SOURCE as Water_Source,
+  TRY_CAST(IRRIGATION_DURATION_MIN as INT) as Irrigation_Duration_Min
+FROM DFA23RAWDATA.RAWDATA.IRRIGATIONDATARAW;
+
+/*location data staging table*/
+
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_LocationDataRaw (
+   Sensor_ID VARCHAR(16777216),
+   Location_Name VARCHAR(30),
+   Latitude DECIMAL(8, 6),
+   Longitude DECIMAL(9, 6),
+   Elevation DECIMAL(8, 2),
+   Region VARCHAR(20)
+);
+
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_LocationDataRaw
+SELECT
+  SENSOR_ID as Sensor_ID,
+  LOCATION_NAME AS Location_Name ,
+  TRY_CAST(LATITUDE AS DECIMAL(8, 6)) AS Latitude,
+   TRY_CAST(LONGITUDE AS DECIMAL(9, 6)) AS Longitude,
+   TRY_CAST(ELEVATION AS DECIMAL(8, 2)) AS Elevation,
+   REGION as Region
+FROM DFA23RAWDATA.RAWDATA.LOCATIONDATARAW
+
+/* pest data staging table*/
+
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_PestDataRaw (
+   Timestamp TIMESTAMP,
+   Pest_Type VARCHAR(16777216),
+   Pest_Description VARCHAR(16777216),
+   Pest_Severity VARCHAR(16777216)
+);
+
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_PestDataRaw
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  PEST_TYPE AS Pest_Type ,
+  PEST_DESCRIPTION AS Pest_Description ,
+  PEST_SEVERITY AS Pest_Severity 
+FROM DFA23RAWDATA.RAWDATA.PESTDATARAW;
+
+/* weather data staging table*/
+
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_WeatherDataRaw (
+   Timestamp TIMESTAMP,
+   Weather_Condition VARCHAR(16777216),
+   Wind_Speed FLOAT,
+   Precipitation FLOAT
+);
+
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_WeatherDataRaw
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  WEATHER_CONDITION AS Weather_Condition,
+   TRY_CAST(WIND_SPEED AS FLOAT) AS Wind_Speed,
+   TRY_CAST(PRECIPITATION AS FLOAT) AS Precipitation
+FROM DFA23RAWDATA.RAWDATA.WEATHERDATARAW;
+
+/* soil data staging table*/
+
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SoilDataRaw (
+   Timestamp TIMESTAMP,
+   Soil_Comp FLOAT,
+   Soil_Moisture FLOAT,
+   Soil_Ph FLOAT,
+   Nitrogen_Level FLOAT,
+   Phosphorous_Level FLOAT,
+   Organic_matter FLOAT
+);
+
+/* inserting data*/
+INSERT INTO DFA23RAWDATA.HIT.Staging_SoilDataRaw
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  TRY_CAST(SOIL_COMP AS FLOAT) AS Soil_Comp,
+   TRY_CAST(SOIL_MOISTURE AS FLOAT) AS Soil_Moisture,
+   TRY_CAST(SOIL_PH AS FLOAT) AS Soil_Ph,
+   TRY_CAST(NITROGEN_LEVEL AS FLOAT) AS Nitrogen_Level,
+    TRY_CAST(PHOSPHORUS_LEVEL AS FLOAT) AS Phosphorus_Level,
+   TRY_CAST(ORGANIC_MATTER AS FLOAT) AS Organic_Matter
+FROM DFA23RAWDATA.RAWDATA.SOILDATARAW;
+
+/* I CHOSE TO RENAME TABLES FOR EASE OF USE */
+
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_CROPDATARAW RENAME TO DFA23RAWDATA.HIT.CROP_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_IRRIGATIONDATARAW RENAME TO DFA23RAWDATA.HIT.IRRIGATION_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_LOCATIONDATARAW RENAME TO DFA23RAWDATA.HIT.LOCATION_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_PESTDATARAW RENAME TO DFA23RAWDATA.HIT.PEST_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_SENSORDATARAW RENAME TO DFA23RAWDATA.HIT.SENSOR_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_SOILDATARAW RENAME TO DFA23RAWDATA.HIT.SOIL_DATA_TABLE;
+ALTER TABLE DFA23RAWDATA.HIT.STAGING_WEATHERDATARAW RENAME TO DFA23RAWDATA.HIT.WEATHER_DATA_TABLE;
+
+/* STAGING TABLE CREATION COMPLETE ------------------------------------------------------*/
+
+/* DATA CLEANING PROCESS -----------------------------------------------------------------------------*/
+
+/* DEALING WITH DATA QUALITY ISSUES IN CROP DATA TABLE*/
+
+/* checking for null values in the column and seeing if other columns have any value in them when timestamp is null*/
+SELECT * FROM  HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL
+
+/* removing rows where timestamp is null because the other columns are also null and they make up a small percentage of data*/
+DELETE FROM HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL 
+
+/* fixing spelling mistakes in crop type*/
+UPDATE HIT.CROP_DATA_TABLE
+SET CROP_TYPE = CASE
+    WHEN CROP_TYPE = 'Cron' THEN 'corn'
+    ELSE CROP_TYPE
+END
+WHERE CROP_TYPE = 'cron';
+
+UPDATE HIT.CROP_DATA_TABLE
+SET CROP_TYPE = CASE
+    WHEN CROP_TYPE = 'Wheaat' THEN 'Wheat'
+    ELSE CROP_TYPE
+END
+WHERE CROP_TYPE = 'Wheaat';
+
+/* finding out how many null values crop type has*/
+SELECT COUNT(CROP_TYPE) FROM HIT.CROP_DATA_TABLE WHERE CROP_YIELD IS NULL;
+
+/* to FIND AVERAGE CROP YIELD FOR EACH CROP TYPE THEN USE THIS TO FILL IN NULLS*/
+SELECT CROP_TYPE,AVG(CROP_YIELD) FROM HIT.CROP_DATA_TABLE GROUP BY CROP_TYPE;
+
+/* Filling in missing CROP_YIELD values*/
+/* replacing null values with the average for that crop_type*/
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 550.30 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Rice';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 549.28 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Wheat';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 550.15 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Carrot';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 549.96 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Tomato';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 550.13 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Potato';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 549.96 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Cotton';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 549.07 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Soybean';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 549.89 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Barley';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 550.49 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Sugarcane';
+UPDATE HIT.CROP_DATA_TABLE SET CROP_YIELD = 550.19 WHERE CROP_YIELD IS NULL AND CROP_TYPE = 'Corn';
+
+
+/* filling in missing irrigation duration values with the average duration */
+SELECT avg(irrigation_duration_min) FROM HIT.irrigation_data_table;
+UPDATE HIT.IRRIGATION_DATA_TABLE SET irrigation_duration_min = 35 WHERE irrigation_duration_min IS NULL;
+
+/* cleaning pest data table*/
+
+/* This query will count rows where sensor_id is NULL and at least one of the specified columns (latitude, location_name, longitude, elevation, or region) is not NULL. It allows you to identify rows where the sensor_id is missing but other location-related information is present.*/
+SELECT * FROM HIT.pest_data_table WHERE pest_description is null;
+/*deletes all null sensorid since we have confirmed the rows are null through out*/
+delete from hit.pest_data_table where sensor_id is null;
+ 
+/*BECAUSE IT'S CATEGORICAL DATA AND THERE IS NO WAY TO BE SURE AND WE WONT BE CONSIDERING THIS IN ANALYSIS WE REPLACE DESCRIPTION WITH NA */
+UPDATE HIT.PEST_DATA_TABLE SET PEST_DESCRIPTION = 'NA' WHERE PEST_DESCRIPTION IS NULL 
+
+/* WE CHECK HOW MANY ROWS HAVE UNKNOWN PEST SEVERITY */
+SELECT COUNT(PEST_TYPE) FROM HIT.PEST_DATA_TABLE WHERE PEST_TYPE LIKE'NA'
+/* SINCE IT ACCOUNTS FOR MORE THAN 5% OF THE DATA TO AVOID ISSUES DURING ANALYSIS WE LEAVE THEM AS NA */
+
+/* Cleaning sensor data */
+
+/* count of null temperature values*/
+select count(*) from hit.sensor_data_table where temperature_c is null;
+/* creates a temporary table that takes the average temperature by hour by date and hour*/
+CREATE OR REPLACE TEMPORARY TABLE HIT.Temp_Avg_Temperatures AS
+SELECT
+  DATE_TRUNC('hour', Timestamp) AS Time_Interval,
+  AVG(TEMPERATURE_C) AS Avg_Temperature
+FROM HIT.sensor_data_table
+WHERE TEMPERATURE_C IS NOT NULL
+GROUP BY Time_Interval;
+/* where the date match and it falls into the hourly range we replace with the average for that hour*/ 
+UPDATE hit.sensor_data_table AS D
+SET temperature_c = T.Avg_Temperature
+FROM hit.Temp_Avg_Temperatures AS T
+WHERE D.temperature_c IS NULL
+  AND D.Timestamp BETWEEN T.Time_Interval AND T.Time_Interval + INTERVAL '1 hour';
+
+
+
+
+
+
+
