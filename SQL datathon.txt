@@ -261,6 +261,23 @@ SET Humidity = (
 )
 WHERE Humidity IS NULL;
 
+-- Filling in missing light intensity values with hourly averages
+
+-- creating a temporary table to house hourly average of light intensity
+CREATE or replace TEMPORARY TABLE HIT.TempLightIntensityAverage AS
+SELECT
+    DATE_TRUNC('HOUR', Timestamp) AS Hour,
+    AVG(light_intensity) AS HourlyAverageLightIntensity
+FROM HIT.SENSOR_DATA_TABLE
+GROUP BY DATE_TRUNC('HOUR', Timestamp);
+
+-- Updating the original table to fill in null light_intensity values with hourly averages
+UPDATE HIT.SENSOR_DATA_TABLE t1
+SET t1.light_intensity = t2.HourlyAverageLightIntensity
+FROM HIT.TempLightIntensityAverage t2
+WHERE DATE_TRUNC('HOUR', t2.Hour) = DATE_TRUNC('HOUR', t1.Timestamp)
+    AND t1.light_intensity IS NULL;
+
 
 
 
