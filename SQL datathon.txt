@@ -237,6 +237,29 @@ FROM hit.Temp_Avg_Temperatures AS T
 WHERE D.temperature_c IS NULL
   AND D.Timestamp BETWEEN T.Time_Interval AND T.Time_Interval + INTERVAL '1 hour';
 
+-- Creating a temporary table to store imputed humidity values
+CREATE OR REPLACE TEMPORARY TABLE HIT.Imputed_Humidity (
+    Date DATE,
+    Avg_Humidity DECIMAL(5, 2)
+);
+
+-- Calculating daily average humidity values
+INSERT INTO HIT.Imputed_Humidity (Date, Avg_Humidity)
+SELECT
+    DATE_TRUNC('DAY', Timestamp) AS Date,
+    AVG(Humidity) AS Avg_Humidity
+FROM
+    HIT.sensor_data_table 
+GROUP BY
+    Date;
+    -- Updating your original table to fill in null humidity values
+UPDATE HIT.sensor_data_table
+SET Humidity = (
+    SELECT AVG(Humidity)
+    FROM HIT.sensor_data_table
+    WHERE DATE_TRUNC('DAY', Timestamp) = DATE_TRUNC('DAY', HIT.sensor_data_table.Timestamp)
+)
+WHERE Humidity IS NULL;
 
 
 
