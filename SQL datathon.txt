@@ -297,6 +297,10 @@ WHERE DATE_TRUNC('HOUR', t2.Hour) = DATE_TRUNC('HOUR', t1.Timestamp)
 -- Drop the temporary table when no longer needed
 DROP TABLE hit.TempSoilMoistureAverage;
 
+---Cleaning soil data table
+-- because everywhere timestamp is null the rest of the columns are null we drop those rows
+DELETE FROM hit.soil_data_table WHERE timestamp IS NULL;
+
 
 
 
