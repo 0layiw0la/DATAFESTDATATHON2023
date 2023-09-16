@@ -389,6 +389,32 @@ WHERE PRECIPITATION IS NULL;
 
 ---------------- FINALLY DONE WITH CLEANING ----------------------------------------------
 
+--- Creating dimension tables ------------------------------------------------------------------ 
+
+-- Create the Location Dimension Table and set primary key as location id
+
+CREATE TABLE HIT.LOCATION_DIMENSION_TABLE (
+    Location_ID INT PRIMARY KEY,
+    Location_Name VARCHAR(30) UNIQUE,
+    Latitude DECIMAL(8, 6),
+    Longitude DECIMAL(9, 6),
+    Elevation DECIMAL(8, 2),
+    Region VARCHAR(20)
+);
+/* INSERTS DATA INTO THE DIMENSION TABLE BUT FIRST CREATES A UNIQUE HASH NUMBER AS ID FOR EACH LOCATION NAME*/
+INSERT INTO HIT.LOCATION_DIMENSION_TABLE (Location_ID, Location_Name, Latitude, Longitude, Elevation, Region)
+SELECT HASH(Location_Name), Location_Name, Latitude, Longitude, Elevation, Region FROM HIT.LOCATION_DATA_TABLE;
+
+-- Create the Crop Dimension Table and set crop id as primary key
+CREATE TABLE HIT.CROP_DIMENSION_TABLE(
+    Crop_ID INT PRIMARY KEY,
+    CROP_TYPE VARCHAR(50) UNIQUE,
+    GROWTH_STAGE VARCHAR(50)
+);
+-- loading the data but with unique crop id values
+INSERT INTO HIT.CROP_DIMENSION_TABLE (Crop_ID, CROP_TYPE, GROWTH_STAGE)
+SELECT HASH(CROP_TYPE), CROP_TYPE, GROWTH_STAGE FROM HIT.CROP_DATA_TABLE;
+
 
 
 
