@@ -278,6 +278,24 @@ FROM HIT.TempLightIntensityAverage t2
 WHERE DATE_TRUNC('HOUR', t2.Hour) = DATE_TRUNC('HOUR', t1.Timestamp)
     AND t1.light_intensity IS NULL;
 
+--Updating missing soil moisture values with hourly averages
+-- creating a temporary table containing hourly averages for soil moisture
+CREATE or replace TEMPORARY TABLE HIT.TempSoilMoistureAverage AS
+SELECT
+    DATE_TRUNC('HOUR', Timestamp) AS Hour,
+    AVG(soil_moisture) AS HourlyAverageSoilMoisture
+FROM HIT.sensor_data_table
+GROUP BY DATE_TRUNC('HOUR', Timestamp);
+
+-- Updating the original table to fill in null soil_moisture values with hourly averages
+UPDATE HIT.sensor_data_table t1
+SET t1.soil_moisture = t2.HourlyAverageSoilMoisture
+FROM HIT.TempSoilMoistureAverage t2
+WHERE DATE_TRUNC('HOUR', t2.Hour) = DATE_TRUNC('HOUR', t1.Timestamp)
+    AND t1.soil_moisture IS NULL;
+
+-- Drop the temporary table when no longer needed
+DROP TABLE hit.TempSoilMoistureAverage;
 
 
 
