@@ -1,8 +1,13 @@
-USE DFA23RAWDATA;
-/* Creating staging tables ---------------------------------------------------------------------------*/
+Certainly, here's your SQL code with comments in the present tense:
 
-/* sensor data staging table*/
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SensorDataRaw (
+```sql
+-- Set the default schema to DFA23RAWDATA
+USE DFA23RAWDATA;
+
+/* Creating staging tables ------------------------------------------------------- */
+
+-- Creating a staging table for sensor data
+CREATE OR REPLACE TABLE HIT.Staging_SensorDataRaw (
    SENSOR_ID VARCHAR(10),
    TIMESTAMP TIMESTAMP,
    TEMPERATURE_C FLOAT,
@@ -11,8 +16,9 @@ CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SensorDataRaw (
    LIGHT_INTENSITY NUMBER(38,0),
    BATTERY_LEVEL FLOAT
 );
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_SensorDataRaw
+
+-- Inserting data into the staging sensor data table from the source table
+INSERT INTO HIT.Staging_SensorDataRaw
 SELECT
   SENSOR_ID as SENSOR_ID,
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'YYYY-MM-DD HH24:MI:SS') AS Timestamp,
@@ -21,49 +27,48 @@ SELECT
   TRY_CAST(SOIL_MOISTURE as FLOAT) as SOIL_MOISTURE,
   TRY_CAST(LIGHT_INTENSITY as NUMBER(38,0)) as LIGHT_INTENSITY,
   TRY_CAST(BATTERY_LEVEL as FLOAT) as BATTERY_LEVEL
-FROM DFA23RAWDATA.RAWDATA.SENSORDATARAW;
+FROM RAWDATA.SENSORDATARAW;
 
-
-/* Crop data staging table*/
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_CropDataRaw (
+-- Creating a staging table for crop data
+CREATE OR REPLACE TABLE HIT.Staging_CropDataRaw (
    Timestamp TIMESTAMP,
    Crop_Type VARCHAR(20),
    Crop_Yield  DECIMAL(8, 2),
    Growth_Stage VARCHAR(30),
    Pest_Issue VARCHAR(30)
 );
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_CropDataRaw
+
+-- Inserting data into the staging crop data table from the source table
+INSERT INTO HIT.Staging_CropDataRaw
 SELECT
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
   CROP_TYPE as Crop_Type,
   TRY_CAST(CROP_YIELD as DECIMAL(8, 2)) as Crop_Yield,
   GROWTH_STAGE as Growth_Stage,
   PEST_ISSUE as Pest_Issue
-FROM DFA23RAWDATA.RAWDATA.CROPDATARAW;
+FROM RAWDATA.CROPDATARAW;
 
-/*irrigation data staging table*/ 
-
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_IrrigationDataRaw (
+-- Creating a staging table for irrigation data
+CREATE OR REPLACE TABLE HIT.Staging_IrrigationDataRaw (
    Sensor_ID VARCHAR(16777216),
    Timestamp TIMESTAMP,
    Irrigation_Method VARCHAR(20),
    Water_Source VARCHAR(20),
    Irrigation_Duration_Min INT
 );
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_IrrigationDataRaw
+
+-- Inserting data into the staging irrigation data table from the source table
+INSERT INTO HIT.Staging_IrrigationDataRaw
 SELECT
   SENSOR_ID as Sensor_ID,
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
   IRRIGATION_METHOD AS Irrigation_Method,
   WATER_SOURCE as Water_Source,
   TRY_CAST(IRRIGATION_DURATION_MIN as INT) as Irrigation_Duration_Min
-FROM DFA23RAWDATA.RAWDATA.IRRIGATIONDATARAW;
+FROM RAWDATA.IRRIGATIONDATARAW;
 
-/*location data staging table*/
-
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_LocationDataRaw (
+-- Creating a staging table for location data
+CREATE OR REPLACE TABLE HIT.Staging_LocationDataRaw (
    Sensor_ID VARCHAR(16777216),
    Location_Name VARCHAR(30),
    Latitude DECIMAL(8, 6),
@@ -72,56 +77,53 @@ CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_LocationDataRaw (
    Region VARCHAR(20)
 );
 
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_LocationDataRaw
+-- Inserting data into the staging location data table from the source table
+INSERT INTO HIT.Staging_LocationDataRaw
 SELECT
   SENSOR_ID as Sensor_ID,
-  LOCATION_NAME AS Location_Name ,
+  LOCATION_NAME AS Location_Name,
   TRY_CAST(LATITUDE AS DECIMAL(8, 6)) AS Latitude,
-   TRY_CAST(LONGITUDE AS DECIMAL(9, 6)) AS Longitude,
-   TRY_CAST(ELEVATION AS DECIMAL(8, 2)) AS Elevation,
-   REGION as Region
-FROM DFA23RAWDATA.RAWDATA.LOCATIONDATARAW
+  TRY_CAST(LONGITUDE AS DECIMAL(9, 6)) AS Longitude,
+  TRY_CAST(ELEVATION AS DECIMAL(8, 2)) AS Elevation,
+  REGION as Region
+FROM RAWDATA.LOCATIONDATARAW;
 
-/* pest data staging table*/
-
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_PestDataRaw (
+-- Creating a staging table for pest data
+CREATE OR REPLACE TABLE HIT.Staging_PestDataRaw (
    Timestamp TIMESTAMP,
    Pest_Type VARCHAR(16777216),
    Pest_Description VARCHAR(16777216),
    Pest_Severity VARCHAR(16777216)
 );
 
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_PestDataRaw
+-- Inserting data into the staging pest data table from the source table
+INSERT INTO HIT.Staging_PestDataRaw
 SELECT
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
-  PEST_TYPE AS Pest_Type ,
-  PEST_DESCRIPTION AS Pest_Description ,
-  PEST_SEVERITY AS Pest_Severity 
-FROM DFA23RAWDATA.RAWDATA.PESTDATARAW;
+  PEST_TYPE AS Pest_Type,
+  PEST_DESCRIPTION AS Pest_Description,
+  PEST_SEVERITY AS Pest_Severity
+FROM RAWDATA.PESTDATARAW;
 
-/* weather data staging table*/
-
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_WeatherDataRaw (
+-- Creating a staging table for weather data
+CREATE OR REPLACE TABLE HIT.Staging_WeatherDataRaw (
    Timestamp TIMESTAMP,
    Weather_Condition VARCHAR(16777216),
    Wind_Speed FLOAT,
    Precipitation FLOAT
 );
 
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_WeatherDataRaw
+-- Inserting data into the staging weather data table from the source table
+INSERT INTO HIT.Staging_WeatherDataRaw
 SELECT
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
   WEATHER_CONDITION AS Weather_Condition,
-   TRY_CAST(WIND_SPEED AS FLOAT) AS Wind_Speed,
-   TRY_CAST(PRECIPITATION AS FLOAT) AS Precipitation
-FROM DFA23RAWDATA.RAWDATA.WEATHERDATARAW;
+  TRY_CAST(WIND_SPEED AS FLOAT) AS Wind_Speed,
+  TRY_CAST(PRECIPITATION AS FLOAT) AS Precipitation
+FROM RAWDATA.WEATHERDATARAW;
 
-/* soil data staging table*/
-
-CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SoilDataRaw (
+-- Creating a staging table for soil data
+CREATE OR REPLACE TABLE HIT.Staging_SoilDataRaw (
    Timestamp TIMESTAMP,
    Soil_Comp FLOAT,
    Soil_Moisture FLOAT,
@@ -131,39 +133,37 @@ CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.Staging_SoilDataRaw (
    Organic_matter FLOAT
 );
 
-/* inserting data*/
-INSERT INTO DFA23RAWDATA.HIT.Staging_SoilDataRaw
+-- Inserting data into the staging soil data table from the source table
+INSERT INTO HIT.Staging_SoilDataRaw
 SELECT
   TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
   TRY_CAST(SOIL_COMP AS FLOAT) AS Soil_Comp,
-   TRY_CAST(SOIL_MOISTURE AS FLOAT) AS Soil_Moisture,
-   TRY_CAST(SOIL_PH AS FLOAT) AS Soil_Ph,
-   TRY_CAST(NITROGEN_LEVEL AS FLOAT) AS Nitrogen_Level,
-    TRY_CAST(PHOSPHORUS_LEVEL AS FLOAT) AS Phosphorus_Level,
-   TRY_CAST(ORGANIC_MATTER AS FLOAT) AS Organic_Matter
-FROM DFA23RAWDATA.RAWDATA.SOILDATARAW;
+  TRY_CAST(SOIL_MOISTURE AS FLOAT) AS Soil_Moisture,
+  TRY_CAST(SOIL_PH AS FLOAT) AS Soil_Ph,
+  TRY_CAST(NITROGEN_LEVEL AS FLOAT) AS Nitrogen_Level,
+  TRY_CAST(PHOSPHORUS_LEVEL AS FLOAT) AS Phosphorus_Level,
+  TRY_CAST(ORGANIC_MATTER AS FLOAT) AS Organic_Matter
+FROM RAWDATA.SOILDATARAW;
 
-/* I CHOSE TO RENAME TABLES FOR EASE OF USE */
+/* Renaming tables for ease of use ------------------------------------------------ */
 
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_CROPDATARAW RENAME TO DFA23RAWDATA.HIT.CROP_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_IRRIGATIONDATARAW RENAME TO DFA23RAWDATA.HIT.IRRIGATION_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_LOCATIONDATARAW RENAME TO DFA23RAWDATA.HIT.LOCATION_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_PESTDATARAW RENAME TO DFA23RAWDATA.HIT.PEST_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_SENSORDATARAW RENAME TO DFA23RAWDATA.HIT.SENSOR_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_SOILDATARAW RENAME TO DFA23RAWDATA.HIT.SOIL_DATA_TABLE;
-ALTER TABLE DFA23RAWDATA.HIT.STAGING_WEATHERDATARAW RENAME TO DFA23RAWDATA.HIT.WEATHER_DATA_TABLE;
+-- Renaming staging tables to more user-friendly names
+ALTER TABLE HIT.STAGING_CROPDATARAW RENAME TO HIT.CROP_DATA_TABLE;
+ALTER TABLE HIT.STAGING_IRRIGATIONDATARAW RENAME TO HIT.IRRIGATION_DATA_TABLE;
+ALTER TABLE HIT.STAGING_LOCATIONDATARAW RENAME TO HIT.LOCATION_DATA_TABLE;
+ALTER TABLE HIT.STAGING_PESTDATARAW RENAME TO HIT.PEST_DATA_TABLE;
+ALTER TABLE HIT.STAGING_SENSORDATARAW RENAME TO HIT.SENSOR_DATA_TABLE;
+ALTER TABLE HIT.STAGING_SOILDATARAW RENAME TO HIT.SOIL_DATA_TABLE;
+ALTER TABLE HIT.STAGING_WEATHERDATARAW RENAME TO HIT.WEATHER_DATA_TABLE;
 
-/* STAGING TABLE CREATION COMPLETE ------------------------------------------------------*/
+/* Data cleaning process ------------------------------------------------------------ */
 
-/* DATA CLEANING PROCESS -----------------------------------------------------------------------------*/
+-- Checking for null values in the column and seeing if other columns have any value in them when timestamp is null
+SELECT * FROM HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL;
 
-/* DEALING WITH DATA QUALITY ISSUES IN CROP DATA TABLE*/
+-- Removing rows where timestamp is null because the other columns are also null and they make up a small percentage of data
+DELETE FROM HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL;
 
-/* checking for null values in the column and seeing if other columns have any value in them when timestamp is null*/
-SELECT * FROM  HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL
-
-/* removing rows where timestamp is null because the other columns are also null and they make up a small percentage of data*/
-DELETE FROM HIT.CROP_DATA_TABLE WHERE TIMESTAMP IS NULL 
 
 /* fixing spelling mistakes in crop type*/
 UPDATE HIT.CROP_DATA_TABLE
@@ -632,12 +632,14 @@ create or replace TABLE DFA23RAWDATA.HIT.SOIL_DIMENSION_TABLE (
 	foreign key (TIMESTAMP) references DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE(TIMESTAMP)
 );
 
+---------------------------------------- loading data ------------------------------------------------
+
 INSERT INTO HIT.SOIL_DIMENSION_TABLE ( TIMESTAMP,SOIL_COMP,SOIL_MOISTURE,SOIL_PH,NITROGEN_LEVEL,PHOSPHORUS_LEVEL,ORGANIC_MATTER)
 SELECT * FROM HIT.SOIL_DATA_TABLE;
 
 
 ---------- creating the time dimension table ---------------------------------------------
-create or replace TABLE DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE cluster by (Month)(
+create or replace TABLE DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE cluster by (Month,Year)(
 	TIMESTAMP TIMESTAMP_NTZ(9) NOT NULL,
 	YEAR NUMBER(38,0),
 	MONTH NUMBER(38,0),
@@ -645,7 +647,8 @@ create or replace TABLE DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE cluster by (Month)
 	primary key (TIMESTAMP)
 );
 
-INSERT INTO HIT.TIME_DIMENSION_TABLE (Timestamp, Year, Month, Day, Hour, Minute, Second, Weekday)
+-------------------------------------------------------------------- loading data ------------------------------------
+INSERT INTO HIT.TIME_DIMENSION_TABLE (TIMESTAMP,YEAR,MONTH,WEEKDAY)
 SELECT
     DISTINCT timestamp,
     EXTRACT(YEAR FROM timestamp) AS Year,
@@ -654,6 +657,171 @@ SELECT
 FROM HIT.SENSOR_DATA_TABLE;
 
 ------------------------------ creating weather dimension table -------------------------------------
+create or replace TABLE DFA23RAWDATA.HIT.WEATHER_DIMENSION_TABLE cluster by (Timestamp)(
+	TIMESTAMP TIMESTAMP_NTZ(9) NOT NULL,
+	WEATHER_CONDITION VARCHAR(16777216),
+	WIND_SPEED FLOAT,
+	PRECIPITATION FLOAT,
+	primary key (TIMESTAMP),
+	foreign key (TIMESTAMP) references DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE(TIMESTAMP)
+);
+
+
+-------------------- loading data --------------------------------------------------------------------
+INSERT INTO HIT.WEATHER_DIMENSION_TABLE ( TIMESTAMP,WEATHER_CODITION,WIND_SPEED,PRECIPITATION)
+SELECT * FROM HIT.WEATHER_DATA_TABLE;
+
+-----creating fact tables ---------
+CREATE OR REPLACE TABLE HIT.SENSOR_FACT_TABLE AS
+SELECT  SENSOR_ID,TIMESTAMP
+FROM HIT.SENSOR_DIMENSION_TABLE;
+
+CREATE OR REPLACE TABLE HIT.CROP_FACT_TABLE AS
+SELECT  crop_type
+FROM HIT.SENSOR_DIMENSION_TABLE;
+
+
+
+
+/*
+---------------------------------------THE FOLLOWING QUERIES SHOULD ONLY BE CONSIDERED WHEN NEW DATA HAS BEEN ADDED TO THE RAW DATA ----------------------------------
+-- Set the default schema to DFA23RAWDATA
+USE DFA23RAWDATA;
+
+-------------------- Create or replace staging tables (you can put this section in a separate script if you want to keep the original tables intact) -------
+
+-- Create or replace the staging table for sensor data
+CREATE OR REPLACE TABLE HIT.SENSOR_DATA_TABLE (
+   SENSOR_ID VARCHAR(10),
+   TIMESTAMP TIMESTAMP,
+   TEMPERATURE_C FLOAT,
+   HUMIDITY FLOAT,
+   SOIL_MOISTURE FLOAT,
+   LIGHT_INTENSITY NUMBER(38,0),
+   BATTERY_LEVEL FLOAT
+);
+
+-- Create or replace the staging table for crop data ---------------------
+CREATE OR REPLACE TABLE HIT.CROP_DATA_TABLE (
+   Timestamp TIMESTAMP,
+   Crop_Type VARCHAR(20),
+   Crop_Yield  DECIMAL(8, 2),
+   Growth_Stage VARCHAR(30),
+   Pest_Issue VARCHAR(30)
+);
+
+-- Create or replace the staging table for irrigation data -----------------------------
+CREATE OR REPLACE TABLE HIT.IRRIGATION_DATA_TABLE (
+   Sensor_ID VARCHAR(16777216),
+   Timestamp TIMESTAMP,
+   Irrigation_Method VARCHAR(20),
+   Water_Source VARCHAR(20),
+   Irrigation_Duration_Min INT
+);
+
+-- Create or replace the staging table for location data --------------------------------------
+CREATE OR REPLACE TABLE HIT.LOCATION_DATA_TABLE (
+   Sensor_ID VARCHAR(16777216),
+   Location_Name VARCHAR(30),
+   Latitude DECIMAL(8, 6),
+   Longitude DECIMAL(9, 6),
+   Elevation DECIMAL(8, 2),
+   Region VARCHAR(20)
+);
+
+-- Create or replace the staging table for pest data -------------------------------------------
+CREATE OR REPLACE TABLE HIT.PEST_DATA_TABLE (
+   Timestamp TIMESTAMP,
+   Pest_Type VARCHAR(16777216),
+   Pest_Description VARCHAR(16777216),
+   Pest_Severity VARCHAR(16777216)
+);
+
+-- Create or replace the staging table for weather data ---------------------------------------------------
+CREATE OR REPLACE TABLE HIT.WEATHER_DATA_TABLE (
+   Timestamp TIMESTAMP,
+   Weather_Condition VARCHAR(16777216),
+   Wind_Speed FLOAT,
+   Precipitation FLOAT
+);
+
+-- Create or replace the staging table for soil data ------------------------------------------------------------------
+CREATE OR REPLACE TABLE HIT.SOIL_DATA_TABLE (
+   Timestamp TIMESTAMP,
+   Soil_Comp FLOAT,
+   Soil_Moisture FLOAT,
+   Soil_Ph FLOAT,
+   Nitrogen_Level FLOAT,
+   Phosphorous_Level FLOAT,
+   Organic_Matter FLOAT
+);
+
+------------------------------- Insert new data into staging tables (you can repeat this section for each data source) -----------------------------
+
+----- Insert new data into the staging sensor data table from the source table (adjust as needed) -------------------------------------
+INSERT INTO HIT.SENSOR_DATA_TABLE
+SELECT
+  SENSOR_ID as SENSOR_ID,
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'YYYY-MM-DD HH24:MI:SS') AS Timestamp,
+  TRY_CAST(TEMPERATURE as FLOAT) as TEMPERATURE_C,
+  TRY_CAST(HUMIDITY as FLOAT) as HUMIDITY,
+  TRY_CAST(SOIL_MOISTURE as FLOAT) as SOIL_MOISTURE,
+  TRY_CAST(LIGHT_INTENSITY as NUMBER(38,0)) as LIGHT_INTENSITY,
+  TRY_CAST(BATTERY_LEVEL as FLOAT) as BATTERY_LEVEL
+FROM NEW_RAWDATA.SENSORDATARAW;
+
+------------------- Insert new data into the staging crop data table from the source table (adjust as needed) ---------------------------------------
+INSERT INTO HIT.CROP_DATA_TABLE
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  CROP_TYPE as Crop_Type,
+  TRY_CAST(CROP_YIELD as DECIMAL(8, 2)) as Crop_Yield,
+  GROWTH_STAGE as Growth_Stage,
+  PEST_ISSUE as Pest_Issue
+FROM NEW_RAWDATA.CROPDATARAW;
+
+-------------------- Insert new data into the staging irrigation data table from the source table (adjust as needed) ------------------------------
+INSERT INTO HIT.IRRIGATION_DATA_TABLE
+SELECT
+  SENSOR_ID as Sensor_ID,
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  IRRIGATION_METHOD AS Irrigation_Method,
+  WATER_SOURCE as Water_Source,
+  TRY_CAST(IRRIGATION_DURATION_MIN as INT) as Irrigation_Duration_Min
+FROM NEW_RAWDATA.IRRIGATIONDATARAW;
+
+-------------------- Insert new data into the staging location data table from the source table (adjust as needed) ---------------------------------
+INSERT INTO HIT.LOCATION_DATA_TABLE
+SELECT
+  SENSOR_ID as Sensor_ID,
+  LOCATION_NAME AS Location_Name,
+  TRY_CAST(LATITUDE AS DECIMAL(8, 6)) AS Latitude,
+  TRY_CAST(LONGITUDE AS DECIMAL(9, 6)) AS Longitude,
+  TRY_CAST(ELEVATION AS DECIMAL(8, 2)) AS Elevation,
+  REGION as Region
+FROM NEW_RAWDATA.LOCATIONDATARAW;
+
+------------ Insert new data into the staging pest data table from the source table (adjust as needed) ---------------------------
+INSERT INTO HIT.PEST_DATA_TABLE
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  PEST_TYPE AS Pest_Type,
+  PEST_DESCRIPTION AS Pest_Description,
+  PEST_SEVERITY AS Pest_Severity
+FROM NEW_RAWDATA.PESTDATARAW;
+
+--------------- Insert new data into the staging weather data table from the source table (adjust as needed) --------------------------
+INSERT INTO HIT.WEATHER_DATA_TABLE
+SELECT
+  TO_TIMESTAMP(REPLACE(TIMESTAMP, '"', ''), 'MM/DD/YYYY HH24:MI') AS Timestamp,
+  WEATHER_CONDITION AS Weather_Condition,
+  TRY_CAST(WIND_SPEED AS FLOAT) AS
+
+
+
+---- THEN RE-RUN THE REST OF THE CODE--------------------------
+*/
+
 
 
 
