@@ -351,6 +351,149 @@ SET ORGANIC_MATTER = (
 )
 WHERE ORGANIC_MATTER IS NULL;
 ----------------------------------------------------------------------------------
+
+/* CLEANING PEST DATA TABLE -----------------------------------------------------------------------*/
+
+/* FIXING MISSPELLINGS IN PEST TYPE COLUMN */
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_TYPE = CASE
+    WHEN PEST_TYPE = 'Slogs' THEN 'Slugs'
+    ELSE PEST_TYPE 
+END
+WHERE PEST_TYPE = 'Slogs';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_TYPE = CASE
+    WHEN PEST_TYPE = 'Aphiods' THEN 'Aphids'
+    ELSE PEST_TYPE 
+END
+WHERE PEST_TYPE = 'Aphiods';
+
+/* fixing mispellings in pest_severity_column*/
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_SEVERITY = CASE
+    WHEN PEST_SEVERITY = 'Hihg' THEN 'High'
+    ELSE PEST_SEVERITY 
+END
+WHERE PEST_SEVERITY = 'Hihg';
+
+/* fixing issues with description spellings*/
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Aphids : high infestation riskkk.' THEN 'Aphids : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Aphids : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Aphids : infestation deteced.' THEN 'Aphids : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Aphids : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Caterpillars : infestation deteced.' THEN 'Caterpillars : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Caterpillars : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Caterpillars : high infestation riskkk.' THEN 'Caterpillars : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Caterpillars : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Fungus : high infestation riskkk.' THEN 'Fungus : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Fungus : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Fungus : infestation deteced.' THEN 'Fungus : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Fungus : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Mites : high infestation riskkk.' THEN 'Mites : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Mites : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Mites : infestation deteced.' THEN 'Mites : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Mites : infestation deteced.';
+
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Other : high infestation riskkk.' THEN 'Other : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Other : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Other : infestation deteced.' THEN 'Other : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Other : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Slogs : high infestation riskkk.' THEN 'Slugs : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Slogs : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Slogs : infestation deteced.' THEN 'Slugs : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Slogs : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Slugs : high infestation riskkk.' THEN 'Slugs : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Slugs : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Slugs : infestation deteced.' THEN 'Slugs : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Slugs : infestation deteced.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Whiteflies : high infestation riskkk.' THEN 'Whiteflies : high infestation risk.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Whiteflies : high infestation riskkk.';
+
+UPDATE HIT.PEST_DATA_TABLE
+SET PEST_DESCRIPTION = CASE
+    WHEN PEST_DESCRIPTION = 'Whiteflies : infestation deteced.' THEN 'Whiteflies : infestation detected.'
+    ELSE PEST_DESCRIPTION
+END
+WHERE PEST_DESCRIPTION = 'Whiteflies : infestation deteced.';
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 /* CLEANING WEATHER DATA TABLE---------------------------*/
 
 /* fixing misspellings in weather condition column*/
@@ -405,33 +548,36 @@ WHERE PRECIPITATION IS NULL;
 
 ---------------- FINALLY DONE WITH CLEANING ----------------------------------------------
 
---- Creating dimension tables ------------------------------------------------------------------ 
+--- Creating dimension tables & asigning primary keys & foreign keys & indexing/clustering ------------------------------------------------------------------ 
 
--- Create the Location Dimension Table and set primary key as location id
+-- Create the Location Dimension Table------------------------ 
 
-CREATE TABLE HIT.LOCATION_DIMENSION_TABLE (
-    Location_ID INT PRIMARY KEY,
-    Location_Name VARCHAR(30) UNIQUE,
-    Latitude DECIMAL(8, 6),
-    Longitude DECIMAL(9, 6),
-    Elevation DECIMAL(8, 2),
-    Region VARCHAR(20)
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.LOCATION_DIMENSION_TABLE (
+	LOCATION_NAME VARCHAR(30) NOT NULL,
+	SENSOR_ID VARCHAR(16777216),
+	LATITUDE NUMBER(8,6),
+	LONGITUDE NUMBER(9,6),
+	ELEVATION NUMBER(8,2),
+	REGION VARCHAR(20),
+	PRIMARY KEY (LOCATION_NAME)
 );
-/* INSERTS DATA INTO THE DIMENSION TABLE BUT FIRST CREATES A UNIQUE HASH NUMBER AS ID FOR EACH LOCATION NAME*/
-INSERT INTO HIT.LOCATION_DIMENSION_TABLE (Location_ID, Location_Name, Latitude, Longitude, Elevation, Region)
-SELECT HASH(Location_Name), Location_Name, Latitude, Longitude, Elevation, Region FROM HIT.LOCATION_DATA_TABLE;
+/* INSERTS DATA INTO THE DIMENSION TABLE*/
+INSERT INTO HIT.LOCATION_DIMENSION_TABLE (Location_Name, Latitude, Longitude, Elevation, Region)
+SELECT Location_Name, Latitude, Longitude, Elevation, Region FROM HIT.LOCATION_DATA_TABLE;
 
--- Create the Crop Dimension Table and set crop id as primary key
+-- Create the Crop Dimension Table ---------------------------------
 CREATE TABLE HIT.CROP_DIMENSION_TABLE(
-    Crop_ID INT PRIMARY KEY,
-    CROP_TYPE VARCHAR(50) UNIQUE,
+    CROP_TYPE VARCHAR(50) PRIMARY KEY,
+    PEST_ISSUE VARCHAR(30),
+    CROP_YIELD NUMBER,
+    TIMESTAMP TIMESTAMP,
     GROWTH_STAGE VARCHAR(50)
 );
--- loading the data but with unique crop id values
+-- loading the data ----------------------
 INSERT INTO HIT.CROP_DIMENSION_TABLE (Crop_ID, CROP_TYPE, GROWTH_STAGE)
 SELECT HASH(CROP_TYPE), CROP_TYPE, GROWTH_STAGE FROM HIT.CROP_DATA_TABLE;
 
--- Create the Pest Dimension Table
+-- Create the Pest Dimension Table-----------
 CREATE TABLE HIT.PEST_DIMENSION_TABLE (
     Pest_ID INT PRIMARY KEY,
     Pest_Type VARCHAR(50) UNIQUE,
@@ -442,16 +588,72 @@ CREATE TABLE HIT.PEST_DIMENSION_TABLE (
 INSERT INTO HIT.PEST_DIMENSION_TABLE (Pest_ID, Pest_Type, Pest_Description)
 SELECT HASH(Pest_Type), Pest_Type, Pest_Description FROM HIT.PEST_DATA_TABLE;
 
--- Create the Sensor Dimension Table
-CREATE TABLE HIT.SENSOR_DIMENSION_TABLE (
-    SENSOR_ID VARCHAR(10) PRIMARY KEY
+-- Create the Sensor Dimension Table-----------
+CREATE OR REPLACE TABLE DFA23RAWDATA.HIT.SENSOR_DIMENSION_TABLE (
+	SENSOR_ID VARCHAR(10) PRIMARY KEY,
+	TIMESTAMP TIMESTAMP_NTZ(9),
+	TEMPERATURE_C FLOAT,
+	HUMIDITY FLOAT,
+	SOIL_MOISTURE FLOAT,
+	LIGHT_INTENSITY NUMBER(38,0),
+	BATTERY_LEVEL FLOAT
 );
 
--- Load data into the Sensor Dimension Table 
-INSERT INTO HIT.SENSOR_DIMENSION_TABLE (SENSOR_ID)
-SELECT DISTINCT SENSOR_ID FROM HIT.SENSOR_DATA_TABLE;
+-- Load data into the Sensor Dimension Table --------------- 
+INSERT INTO HIT.SENSOR_DIMENSION_TABLE (SENSOR_ID,TIMESTAMP,TEMPERATURE,HUMIDITY,SOIL_MOISTURE,LIGHT_INTENSITY,BATTERY_LEVEL)
+SELECT * FROM HIT.SENSOR_DATA_TABLE;
+
+----------- Creating irrigation dimension table --------
+create or replace TABLE DFA23RAWDATA.HIT.IRRIGATION_DIMENSION_TABLE cluster by (Sensor_ID)(    /* because snowflake doesnt support indexing we cluster on our index clumn*/
+	TIMESTAMP TIMESTAMP_NTZ(9) NOT NULL,
+	SENSOR_ID VARCHAR(16777216) NOT NULL,
+	IRRIGATION_METHOD VARCHAR(20),
+	WATER_SOURCE VARCHAR(20),
+	IRRIGATION_DURATION_MIN NUMBER(38,0),
+	primary key (TIMESTAMP, SENSOR_ID),
+	foreign key (TIMESTAMP) references DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE(TIMESTAMP)
+);
+
+---------- loading the data ---------------------
+INSERT INTO HIT.IRRIGATION_DIMENSION_TABLE ( TIMESTAMP,SENSOR_ID,IRIGATION_METHOD,IRRIGATION_DURATION_MIN)
+SELECT * FROM HIT.IRRIGATION_DATA_TABLE;
+
+----- creating soil dimension table -------------------------------------------------------------------
+
+create or replace TABLE DFA23RAWDATA.HIT.SOIL_DIMENSION_TABLE (
+	TIMESTAMP TIMESTAMP_NTZ(9) NOT NULL,
+	SOIL_COMP FLOAT,
+	SOIL_MOISTURE FLOAT,
+	SOIL_PH FLOAT,
+	NITROGEN_LEVEL FLOAT,
+	PHOSPHOROUS_LEVEL FLOAT,
+	ORGANIC_MATTER FLOAT,
+	primary key (TIMESTAMP),
+	foreign key (TIMESTAMP) references DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE(TIMESTAMP)
+);
+
+INSERT INTO HIT.SOIL_DIMENSION_TABLE ( TIMESTAMP,SOIL_COMP,SOIL_MOISTURE,SOIL_PH,NITROGEN_LEVEL,PHOSPHORUS_LEVEL,ORGANIC_MATTER)
+SELECT * FROM HIT.SOIL_DATA_TABLE;
 
 
+---------- creating the time dimension table ---------------------------------------------
+create or replace TABLE DFA23RAWDATA.HIT.TIME_DIMENSION_TABLE cluster by (Month)(
+	TIMESTAMP TIMESTAMP_NTZ(9) NOT NULL,
+	YEAR NUMBER(38,0),
+	MONTH NUMBER(38,0),
+	WEEKDAY VARCHAR(10),
+	primary key (TIMESTAMP)
+);
+
+INSERT INTO HIT.TIME_DIMENSION_TABLE (Timestamp, Year, Month, Day, Hour, Minute, Second, Weekday)
+SELECT
+    DISTINCT timestamp,
+    EXTRACT(YEAR FROM timestamp) AS Year,
+    EXTRACT(MONTH FROM timestamp) AS Month,
+    TO_CHAR(timestamp, 'Dy') AS Weekday
+FROM HIT.SENSOR_DATA_TABLE;
+
+------------------------------ creating weather dimension table -------------------------------------
 
 
 
